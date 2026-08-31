@@ -42,10 +42,4 @@ bin/dev
 
 Then open http://localhost:3000 in your browser.
 
-## Project docs
 
-- [docs/](docs/)
-
-## Notes
-
-This site is intentionally static and does not use a database-backed model layer for this lab.
