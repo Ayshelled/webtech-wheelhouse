@@ -44,6 +44,5 @@ bin/dev
 
 Then open http://localhost:3000 in your browser.
 
-## Project docs
 
 - [docs/](docs/)

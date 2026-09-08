@@ -2,7 +2,7 @@
 
 ## Diagram
 
-![Wheelhouse domain model](domain-model.png)
+![Wheelhouse domain model](domain-model2.svg)
 
 ## Lifecycle
 
