@@ -15,19 +15,21 @@ Documentation for the project lives in the docs directory.
 ## Setup
 
 1. Clone the repository.
-2. Install the Ruby gems:
+2. Install dependencies:
+
    ```bash
    bundle install
-   ```
-3. Install the JavaScript dependencies:
-   ```bash
    npm install
    ```
-4. Create the local PostgreSQL databases:
+
+3. Create the database, load the schema, and seed the data:
+
    ```bash
-   bin/rails db:create
+   bin/rails db:setup
    ```
-5. Start the app:
+
+4. Start the app:
+
    ```bash
    bin/dev
    ```
@@ -45,7 +47,3 @@ Then open http://localhost:3000 in your browser.
 ## Project docs
 
 - [docs/](docs/)
-
-## Notes
-
-This site is intentionally static and does not use a database-backed model layer for this lab.
