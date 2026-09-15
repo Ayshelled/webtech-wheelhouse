@@ -1,0 +1,14 @@
+<% content_for :title, "Services" %>
+
+<h1>Services</h1>
+
+<% if @service_catalog_items.any? %>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead><tr><th>Service</th><th>Price</th></tr></thead>
+      <tbody><%= render @service_catalog_items %></tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-body-secondary">No services found.</p>
+<% end %>

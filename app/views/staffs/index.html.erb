@@ -1,0 +1,14 @@
+<% content_for :title, "Staff" %>
+
+<h1>Staff</h1>
+
+<% if @staffs.any? %>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead><tr><th>Name</th><th>Role</th></tr></thead>
+      <tbody><%= render @staffs %></tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-body-secondary">No staff found.</p>
+<% end %>

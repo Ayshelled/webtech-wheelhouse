@@ -1,0 +1,14 @@
+<% content_for :title, "Repairs" %>
+
+<h1>Repairs</h1>
+
+<% if @repairs.any? %>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead><tr><th>Repair</th><th>Bike</th><th>Customer</th><th>Status</th><th>Promised on</th></tr></thead>
+      <tbody><%= render @repairs %></tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-body-secondary">No repairs found.</p>
+<% end %>

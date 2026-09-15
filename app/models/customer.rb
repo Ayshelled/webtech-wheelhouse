@@ -1,2 +1,3 @@
 class Customer < ApplicationRecord
-    end
+    has_many :bikes
+end

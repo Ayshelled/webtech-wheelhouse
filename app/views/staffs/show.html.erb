@@ -1,0 +1,38 @@
+<% content_for :title, @staff.name %>
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <p class="text-body-secondary mb-1">Staff member</p>
+    <h1><%= @staff.name %></h1>
+  </div>
+  <%= link_to "All staff", staffs_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<dl class="row">
+  <dt class="col-sm-3">Name</dt>
+  <dd class="col-sm-9"><%= @staff.name %></dd>
+  <dt class="col-sm-3">Role</dt>
+  <dd class="col-sm-9"><%= @staff.role %></dd>
+</dl>
+
+<h2 class="h4 mt-5">Repairs taken in</h2>
+<% if @staff.intake_repairs.any? %>
+  <ul>
+    <% @staff.intake_repairs.order(:promised_on, :id).each do |repair| %>
+      <li><%= link_to "Repair ##{repair.id}", repair_path(repair) %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-body-secondary">No repairs were taken in by this staff member.</p>
+<% end %>
+
+<h2 class="h4 mt-5">Repairs assigned</h2>
+<% if @staff.assigned_repairs.any? %>
+  <ul>
+    <% @staff.assigned_repairs.order(:promised_on, :id).each do |repair| %>
+      <li><%= link_to "Repair ##{repair.id}", repair_path(repair) %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-body-secondary">No repairs are assigned to this staff member.</p>
+<% end %>

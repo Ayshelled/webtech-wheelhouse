@@ -1,0 +1,7 @@
+<tr class="<%= "table-danger" if repair.promised_on < Date.current && repair.handed_back_at.nil? %>">
+  <td><%= link_to "Repair ##{repair.id}", repair_path(repair) %></td>
+  <td><%= link_to "#{repair.bike.make} #{repair.bike.model}", bike_path(repair.bike) %></td>
+  <td><%= link_to repair.bike.customer.name, customer_path(repair.bike.customer) %></td>
+  <td><span class="badge text-bg-secondary"><%= repair.status %></span></td>
+  <td><%= repair.promised_on.strftime("%-d %B %Y") %></td>
+</tr>

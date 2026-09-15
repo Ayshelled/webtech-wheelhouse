@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   root "pages#home"
-  get "/services", to: "pages#services", as: :services
+  resources :customers, only: %i[index show]
+  resources :bikes, only: %i[index show]
+  resources :repairs, only: %i[index show]
+  resources :service_catalog_items, path: "services", only: %i[index show]
+  resources :staffs, only: %i[index show]
   get "/visit", to: "pages#visit", as: :visit
   get "/about", to: "pages#about", as: :about
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

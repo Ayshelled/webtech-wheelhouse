@@ -1,0 +1,32 @@
+<% content_for :title, "#{@bike.make} #{@bike.model}" %>
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <p class="text-body-secondary mb-1">Bike</p>
+    <h1><%= @bike.make %> <%= @bike.model %></h1>
+  </div>
+  <%= link_to "All bikes", bikes_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<dl class="row">
+  <dt class="col-sm-3">Owner</dt>
+  <dd class="col-sm-9"><%= link_to @bike.customer.name, customer_path(@bike.customer) %></dd>
+  <dt class="col-sm-3">Make</dt>
+  <dd class="col-sm-9"><%= @bike.make %></dd>
+  <dt class="col-sm-3">Model</dt>
+  <dd class="col-sm-9"><%= @bike.model %></dd>
+  <dt class="col-sm-3">Serial number</dt>
+  <dd class="col-sm-9"><%= @bike.serial_number %></dd>
+</dl>
+
+<h2 class="h4 mt-5">Repairs</h2>
+<% if @bike.repairs.any? %>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead><tr><th>Repair</th><th>Status</th><th>Promised on</th></tr></thead>
+      <tbody><%= render @bike.repairs.order(:promised_on, :id) %></tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-body-secondary">This bike has no repair history.</p>
+<% end %>

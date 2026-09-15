@@ -1,0 +1,41 @@
+<% content_for :title, "Repair ##{@repair.id}" %>
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <p class="text-body-secondary mb-1">Repair</p>
+    <h1>Repair #<%= @repair.id %></h1>
+  </div>
+  <%= link_to "All repairs", repairs_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<dl class="row">
+  <dt class="col-sm-3">Bike</dt>
+  <dd class="col-sm-9"><%= link_to "#{@repair.bike.make} #{@repair.bike.model}", bike_path(@repair.bike) %></dd>
+  <dt class="col-sm-3">Customer</dt>
+  <dd class="col-sm-9"><%= link_to @repair.bike.customer.name, customer_path(@repair.bike.customer) %></dd>
+  <dt class="col-sm-3">Status</dt>
+  <dd class="col-sm-9"><span class="badge text-bg-secondary"><%= @repair.status %></span></dd>
+  <dt class="col-sm-3">Promised on</dt>
+  <dd class="col-sm-9"><%= @repair.promised_on.strftime("%-d %B %Y") %></dd>
+  <dt class="col-sm-3">Customer approved</dt>
+  <dd class="col-sm-9"><%= @repair.customer_approved.nil? ? "Pending" : (@repair.customer_approved ? "Yes" : "No") %></dd>
+  <dt class="col-sm-3">Approved at</dt>
+  <dd class="col-sm-9"><%= @repair.approved_at&.to_fs(:long) || "Not approved" %></dd>
+  <dt class="col-sm-3">Quoted at</dt>
+  <dd class="col-sm-9"><%= @repair.quoted_at&.to_fs(:long) || "Not quoted" %></dd>
+  <dt class="col-sm-3">Handed back</dt>
+  <dd class="col-sm-9"><%= @repair.handed_back_at&.to_fs(:long) || "Not handed back" %></dd>
+</dl>
+
+<h2 class="h4 mt-5">Services charged</h2>
+<% if @repair.repair_line_items.any? %>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead><tr><th>Service</th><th>Price charged</th></tr></thead>
+      <tbody><%= render @repair.repair_line_items.includes(:service_catalog_item) %></tbody>
+      <tfoot><tr><th>Total</th><th><%= number_to_currency(@repair.repair_line_items.sum(:price_charged)) %></th></tr></tfoot>
+    </table>
+  </div>
+<% else %>
+  <p class="text-body-secondary">No services have been charged.</p>
+<% end %>

@@ -1,2 +1,3 @@
 class ServiceCatalogItem < ApplicationRecord
-end 
+	has_many :repair_line_items
+end
