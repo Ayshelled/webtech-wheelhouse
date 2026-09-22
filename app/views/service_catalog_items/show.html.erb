@@ -21,7 +21,7 @@
     <table class="table table-striped align-middle">
       <thead><tr><th>Repair</th><th>Price charged</th></tr></thead>
       <tbody>
-        <% @service_catalog_item.repair_line_items.includes(:repair).each do |line_item| %>
+        <% @service_catalog_item.repair_line_items.each do |line_item| %>
           <tr>
             <td><%= link_to "Repair ##{line_item.repair.id}", repair_path(line_item.repair) %></td>
             <td><%= number_to_currency(line_item.price_charged) %></td>

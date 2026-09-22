@@ -3,7 +3,7 @@ class PagesController < ApplicationController
   end
 
   def services
-    @services = ServiceCatalogItem.order(:name)
+    @services = ServiceCatalogItem.by_name
   end
 
   def visit

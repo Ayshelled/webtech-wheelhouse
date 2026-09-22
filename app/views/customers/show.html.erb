@@ -18,7 +18,7 @@
   <div class="table-responsive">
     <table class="table table-striped align-middle">
       <thead><tr><th>Bike</th><th>Serial number</th><th></th></tr></thead>
-      <tbody><%= render @customer.bikes.order(:make, :model) %></tbody>
+      <tbody><%= render @customer.bikes %></tbody>
     </table>
   </div>
 <% else %>

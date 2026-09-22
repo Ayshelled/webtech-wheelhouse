@@ -24,7 +24,7 @@
   <div class="table-responsive">
     <table class="table table-striped align-middle">
       <thead><tr><th>Repair</th><th>Status</th><th>Promised on</th></tr></thead>
-      <tbody><%= render @bike.repairs.order(:promised_on, :id) %></tbody>
+      <tbody><%= render @bike.repairs %></tbody>
     </table>
   </div>
 <% else %>

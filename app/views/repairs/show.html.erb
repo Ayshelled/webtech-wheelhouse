@@ -14,7 +14,7 @@
   <dt class="col-sm-3">Customer</dt>
   <dd class="col-sm-9"><%= link_to @repair.bike.customer.name, customer_path(@repair.bike.customer) %></dd>
   <dt class="col-sm-3">Status</dt>
-  <dd class="col-sm-9"><span class="badge text-bg-secondary"><%= @repair.status %></span></dd>
+  <dd class="col-sm-9"><span class="badge text-bg-secondary"><%= @repair.status.humanize %></span></dd>
   <dt class="col-sm-3">Promised on</dt>
   <dd class="col-sm-9"><%= @repair.promised_on.strftime("%-d %B %Y") %></dd>
   <dt class="col-sm-3">Customer approved</dt>
@@ -32,8 +32,8 @@
   <div class="table-responsive">
     <table class="table table-striped align-middle">
       <thead><tr><th>Service</th><th>Price charged</th></tr></thead>
-      <tbody><%= render @repair.repair_line_items.includes(:service_catalog_item) %></tbody>
-      <tfoot><tr><th>Total</th><th><%= number_to_currency(@repair.repair_line_items.sum(:price_charged)) %></th></tr></tfoot>
+      <tbody><%= render partial: "repairs/repair_line_item", collection: @repair.repair_line_items %></tbody>
+      <tfoot><tr><th>Total</th><th><%= number_to_currency(@repair.total) %></th></tr></tfoot>
     </table>
   </div>
 <% else %>

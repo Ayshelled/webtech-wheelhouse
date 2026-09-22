@@ -1,9 +1,9 @@
 class StaffsController < ApplicationController
   def index
-    @staffs = Staff.order(:name)
+    @staffs = Staff.by_name
   end
 
   def show
-    @staff = Staff.find(params[:id])
+    @staff = Staff.includes(intake_repairs: {}, assigned_repairs: {}).find(params[:id])
   end
 end

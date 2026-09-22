@@ -18,7 +18,7 @@
 <h2 class="h4 mt-5">Repairs taken in</h2>
 <% if @staff.intake_repairs.any? %>
   <ul>
-    <% @staff.intake_repairs.order(:promised_on, :id).each do |repair| %>
+    <% @staff.intake_repairs.each do |repair| %>
       <li><%= link_to "Repair ##{repair.id}", repair_path(repair) %></li>
     <% end %>
   </ul>
@@ -29,7 +29,7 @@
 <h2 class="h4 mt-5">Repairs assigned</h2>
 <% if @staff.assigned_repairs.any? %>
   <ul>
-    <% @staff.assigned_repairs.order(:promised_on, :id).each do |repair| %>
+    <% @staff.assigned_repairs.each do |repair| %>
       <li><%= link_to "Repair ##{repair.id}", repair_path(repair) %></li>
     <% end %>
   </ul>
