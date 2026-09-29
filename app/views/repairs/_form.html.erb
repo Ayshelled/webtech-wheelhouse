@@ -1,0 +1,89 @@
+<%= form_with model: repair do |form| %>
+  <%= render "shared/form_errors", record: repair %>
+
+  <div class="mb-3">
+    <%= form.label :bike_id, "Bike", class: "form-label" %>
+    <%= form.collection_select :bike_id, bikes, :id, ->(bike) { "#{bike.make} #{bike.model} - #{bike.serial_number} (#{bike.customer.name})" }, { prompt: "Choose a bike" }, class: field_class(repair, :bike, "form-select") %>
+    <%= field_error_messages(repair, :bike) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :intake_staff_id, "Taken in by", class: "form-label" %>
+    <%= form.collection_select :intake_staff_id, staffs, :id, :name, { prompt: "Choose a staff member" }, class: field_class(repair, :intake_staff, "form-select") %>
+    <%= field_error_messages(repair, :intake_staff) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :assigned_staff_id, "Assigned mechanic", class: "form-label" %>
+    <%= form.collection_select :assigned_staff_id, mechanics, :id, :name, { include_blank: "Unassigned" }, class: field_class(repair, :assigned_staff, "form-select") %>
+    <%= field_error_messages(repair, :assigned_staff) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :promised_on, class: "form-label" %>
+    <%= form.date_field :promised_on, class: field_class(repair, :promised_on) %>
+    <%= field_error_messages(repair, :promised_on) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :status, class: "form-label" %>
+    <%= form.select :status, Repair.statuses.keys.map { |status| [status.humanize, status] }, {}, class: field_class(repair, :status, "form-select") %>
+    <%= field_error_messages(repair, :status) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :customer_approved, "Customer approval", class: "form-label" %>
+    <%= form.select :customer_approved, [["Pending", ""], ["Yes", true], ["No", false]], {}, class: field_class(repair, :customer_approved, "form-select") %>
+    <%= field_error_messages(repair, :customer_approved) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :approved_at, class: "form-label" %>
+    <%= form.datetime_local_field :approved_at, class: field_class(repair, :approved_at) %>
+    <%= field_error_messages(repair, :approved_at) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :quoted_at, class: "form-label" %>
+    <%= form.datetime_local_field :quoted_at, class: field_class(repair, :quoted_at) %>
+    <%= field_error_messages(repair, :quoted_at) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :handed_back_at, class: "form-label" %>
+    <%= form.datetime_local_field :handed_back_at, class: field_class(repair, :handed_back_at) %>
+    <%= field_error_messages(repair, :handed_back_at) %>
+  </div>
+
+  <fieldset class="mb-4">
+    <legend class="h5">Services charged</legend>
+    <% repair.repair_line_items.each_with_index do |line_item, index| %>
+      <%= form.fields_for :repair_line_items, line_item do |line_fields| %>
+        <div class="border-bottom py-3">
+          <h3 class="h6">Service line <%= index + 1 %></h3>
+          <div class="mb-3">
+            <%= line_fields.label :service_catalog_item_id, "Service", class: "form-label" %>
+            <%= line_fields.collection_select :service_catalog_item_id, services, :id, :name, { include_blank: "Leave this line unused" }, class: field_class(line_item, :service_catalog_item, "form-select") %>
+            <%= field_error_messages(line_item, :service_catalog_item) %>
+          </div>
+          <div class="mb-3">
+            <%= line_fields.label :price_charged, "Price charged", class: "form-label" %>
+            <%= line_fields.number_field :price_charged, step: "0.01", class: field_class(line_item, :price_charged) %>
+            <%= field_error_messages(line_item, :price_charged) %>
+          </div>
+          <% if line_item.persisted? %>
+            <div class="form-check">
+              <%= line_fields.check_box :_destroy, class: "form-check-input" %>
+              <%= line_fields.label :_destroy, "Remove this service line", class: "form-check-label" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </fieldset>
+
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", repairs_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

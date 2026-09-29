@@ -1,0 +1,4 @@
+<% content_for :title, "Edit #{@bike.serial_number}" %>
+
+<h1 class="mb-4">Edit bike</h1>
+<%= render "form", bike: @bike, customers: @customers %>

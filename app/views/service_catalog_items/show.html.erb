@@ -5,7 +5,11 @@
     <p class="text-body-secondary mb-1">Service</p>
     <h1><%= @service_catalog_item.name %></h1>
   </div>
-  <%= link_to "All services", service_catalog_items_path, class: "btn btn-outline-secondary" %>
+  <div class="d-flex flex-wrap gap-2">
+    <%= link_to "All services", service_catalog_items_path, class: "btn btn-outline-secondary" %>
+    <%= link_to "Edit service", edit_service_catalog_item_path(@service_catalog_item), class: "btn btn-primary" %>
+    <%= button_to "Delete service", @service_catalog_item, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete service #{@service_catalog_item.name}?" } %>
+  </div>
 </div>
 
 <dl class="row">

@@ -95,6 +95,7 @@ bike_records = {}
 end
 
 today = Date.current
+seed_repair_created_at = Time.current - 60.days
 repairs = [
   ["TRK-M7-001", "Tagged", nil, nil, nil, 0, ["Safety inspection"]],
   ["TRK-M7-002", "Diagnosing", nil, nil, nil, -1, ["Basic tune-up"]],
@@ -119,6 +120,7 @@ repairs.each do |serial, status, approved, approved_at, quoted_at, promised_offs
     promised_on: today + promised_offset
   )
 
+  repair.created_at = [ repair.created_at || seed_repair_created_at, seed_repair_created_at ].min
   repair.intake_staff_id = staff_records.fetch("Evan Brooks").id
   repair.assigned_staff_id = staff_records.fetch("Maya Singh").id unless status == "Tagged"
   repair.status = status

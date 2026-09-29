@@ -1,0 +1,20 @@
+<%= form_with model: staff do |form| %>
+  <%= render "shared/form_errors", record: staff %>
+
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: field_class(staff, :name) %>
+    <%= field_error_messages(staff, :name) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :role, class: "form-label" %>
+    <%= form.text_field :role, class: field_class(staff, :role) %>
+    <%= field_error_messages(staff, :role) %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", staffs_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

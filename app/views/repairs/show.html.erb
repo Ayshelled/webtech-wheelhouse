@@ -5,7 +5,11 @@
     <p class="text-body-secondary mb-1">Repair</p>
     <h1>Repair #<%= @repair.id %></h1>
   </div>
-  <%= link_to "All repairs", repairs_path, class: "btn btn-outline-secondary" %>
+  <div class="d-flex flex-wrap gap-2">
+    <%= link_to "All repairs", repairs_path, class: "btn btn-outline-secondary" %>
+    <%= link_to "Edit repair", edit_repair_path(@repair), class: "btn btn-primary" %>
+    <%= button_to "Delete repair", @repair, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete repair ##{@repair.id}?" } %>
+  </div>
 </div>
 
 <dl class="row">

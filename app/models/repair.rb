@@ -5,6 +5,9 @@ class Repair < ApplicationRecord
     has_many :repair_line_items, -> { by_repair }, dependent: :destroy
     has_many :services, through: :repair_line_items, source: :service_catalog_item, dependent: :restrict_with_error
 
+        accepts_nested_attributes_for :repair_line_items, allow_destroy: true,
+            reject_if: ->(attributes) { attributes["service_catalog_item_id"].blank? }
+
     enum :status, {
         tagged: "Tagged",
         diagnosing: "Diagnosing",

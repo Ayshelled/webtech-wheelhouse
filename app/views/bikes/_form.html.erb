@@ -1,0 +1,32 @@
+<%= form_with model: bike do |form| %>
+  <%= render "shared/form_errors", record: bike %>
+
+  <div class="mb-3">
+    <%= form.label :customer_id, "Customer", class: "form-label" %>
+    <%= form.collection_select :customer_id, customers, :id, :name, { prompt: "Choose a customer" }, class: field_class(bike, :customer, "form-select") %>
+    <%= field_error_messages(bike, :customer) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :make, class: "form-label" %>
+    <%= form.text_field :make, class: field_class(bike, :make) %>
+    <%= field_error_messages(bike, :make) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :model, class: "form-label" %>
+    <%= form.text_field :model, class: field_class(bike, :model) %>
+    <%= field_error_messages(bike, :model) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :serial_number, class: "form-label" %>
+    <%= form.text_field :serial_number, class: field_class(bike, :serial_number) %>
+    <%= field_error_messages(bike, :serial_number) %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", bikes_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

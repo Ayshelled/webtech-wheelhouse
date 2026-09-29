@@ -1,6 +1,9 @@
 <% content_for :title, "Services" %>
 
-<h1>Services</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="mb-0">Services</h1>
+  <%= link_to "New service", new_service_catalog_item_path, class: "btn btn-primary" %>
+</div>
 
 <% if @service_catalog_items.any? %>
   <div class="table-responsive">

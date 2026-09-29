@@ -6,35 +6,36 @@ Documentation for the project lives in the docs directory.
 
 ## Prerequisites
 
-- Ruby 3.3.5
-- Rails 8.1.3
-- Node 20.19.0 or newer
-- PostgreSQL 16
+- Ruby 3.4.10 (see `.ruby-version`)
+- Rails 8.1.3.1 or newer in the 8.1 series
+- Node.js 24.20.0 and npm
+- PostgreSQL 16, running locally
 - Bundler
 
 ## Setup
 
-1. Clone the repository.
-2. Install dependencies:
+1. Clone the repository and enter its directory.
+2. Install Ruby and JavaScript dependencies:
 
    ```bash
    bundle install
    npm install
    ```
 
-3. Create the database, load the schema, and seed the data:
+3. Ensure PostgreSQL is running and that your local PostgreSQL role can create databases. If your role or connection differs from the defaults, set `DATABASE_URL` to a PostgreSQL connection URL before running Rails commands.
+4. Create the database, load the schema, and seed the data:
 
    ```bash
    bin/rails db:setup
    ```
 
-4. Start the app:
+5. Start the app:
 
    ```bash
    bin/dev
    ```
 
-## Start the application
+## Run the application
 
 Run:
 

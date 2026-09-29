@@ -1,0 +1,20 @@
+<%= form_with model: customer do |form| %>
+  <%= render "shared/form_errors", record: customer %>
+
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: field_class(customer, :name) %>
+    <%= field_error_messages(customer, :name) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :phone, class: "form-label" %>
+    <%= form.text_field :phone, class: field_class(customer, :phone) %>
+    <%= field_error_messages(customer, :phone) %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", customers_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>
