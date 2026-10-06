@@ -3,3 +3,11 @@ $border-radius: 0.75rem;
 
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap-icons/font/bootstrap-icons';
+
+.repair-thumbnail {
+  width: 5rem;
+}
+
+.repair-diagnosis {
+  max-width: 18rem;
+}

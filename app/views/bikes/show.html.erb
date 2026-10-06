@@ -28,8 +28,8 @@
 <% if @bike.repairs.any? %>
   <div class="table-responsive">
     <table class="table table-striped align-middle">
-      <thead><tr><th>Repair</th><th>Status</th><th>Promised on</th></tr></thead>
-      <tbody><%= render @bike.repairs %></tbody>
+      <thead><tr><th>Photo</th><th>Repair</th><th>Bike</th><th>Customer</th><th>Diagnosis</th><th>Status</th><th>Promised on</th></tr></thead>
+      <tbody><%= render @repairs %></tbody>
     </table>
   </div>
 <% else %>

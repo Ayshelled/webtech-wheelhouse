@@ -96,6 +96,9 @@ end
 
 today = Date.current
 seed_repair_created_at = Time.current - 60.days
+seed_photos = Dir[Rails.root.join("db/seeds/*.jpg")].sort
+raise "Seed bicycle photos are missing from db/seeds/." if seed_photos.empty?
+
 repairs = [
   ["TRK-M7-001", "Tagged", nil, nil, nil, 0, ["Safety inspection"]],
   ["TRK-M7-002", "Diagnosing", nil, nil, nil, -1, ["Basic tune-up"]],
@@ -129,6 +132,30 @@ repairs.each do |serial, status, approved, approved_at, quoted_at, promised_offs
   repair.quoted_at = quoted_at
   repair.handed_back_at = status == "Picked Up" ? today - 1.day : nil
   repair.save!
+
+  if status != "Tagged" && repair.diagnosis.to_plain_text.blank?
+    repair.diagnosis = <<~HTML
+      <div><strong>Inspection summary:</strong> The bicycle was checked at intake.</div>
+      <ul>
+        #{service_names.map { |name| "<li>Inspect #{name.downcase} and confirm safe operation.</li>" }.join}
+      </ul>
+    HTML
+    repair.save!
+  end
+
+  if repair.photos.empty? && ![ [ "TRK-M7-001", 0 ], [ "KO-DP-001", 1 ] ].include?([ serial, promised_offset ])
+    selected_photos = if serial == "TRK-M7-002"
+      seed_photos
+    else
+      [ seed_photos.fetch(promised_offset.abs % seed_photos.length) ]
+    end
+
+    selected_photos.each do |photo_path|
+      File.open(photo_path) do |file|
+        repair.photos.attach(io: file, filename: File.basename(photo_path), content_type: "image/jpeg")
+      end
+    end
+  end
 
   service_names.each_with_index do |service_name, index|
     line_item = RepairLineItem.find_or_initialize_by(

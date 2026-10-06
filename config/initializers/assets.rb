@@ -7,4 +7,7 @@ Rails.application.config.assets.version = "1.0"
 # Rails.application.config.assets.paths << Emoji.images_path
 Rails.application.config.assets.paths << Rails.root.join("node_modules/bootstrap-icons/font")
 Rails.application.config.assets.paths << Rails.root.join("node_modules/bootstrap/dist/js")
+Rails.application.config.assets.paths << Rails.root.join("node_modules/trix/dist")
+Rails.application.config.assets.paths << Rails.root.join("node_modules/@rails/actiontext/app/assets/javascripts")
 Rails.application.config.assets.precompile << "bootstrap.bundle.min.js"
+Rails.application.config.assets.precompile += %w[ trix.esm.js actiontext.esm.js ]

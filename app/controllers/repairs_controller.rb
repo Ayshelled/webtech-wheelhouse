@@ -1,9 +1,9 @@
 class RepairsController < ApplicationController
-  before_action :set_repair, only: %i[show edit update destroy]
+  before_action :set_repair, only: %i[show edit update destroy remove_photo]
   before_action :load_form_options, only: %i[new edit create update]
 
   def index
-    @repairs = Repair.includes(bike: :customer).by_promised_on
+    @repairs = Repair.with_attached_photos.with_rich_text_diagnosis.includes(bike: :customer).by_promised_on
   end
 
   def show
@@ -29,7 +29,12 @@ class RepairsController < ApplicationController
   end
 
   def update
-    if @repair.update(repair_params)
+    attributes = repair_params
+    new_photos = Array(attributes.delete(:photos)).reject(&:blank?)
+    @repair.assign_attributes(attributes)
+    @repair.photos = @repair.photos.blobs + new_photos if new_photos.any?
+
+    if @repair.save
       redirect_to @repair, notice: "Repair ##{@repair.id} was updated."
     else
       ensure_empty_line_slots
@@ -45,10 +50,16 @@ class RepairsController < ApplicationController
     end
   end
 
+  def remove_photo
+    @repair.photos.attachments.find(params[:photo_id]).purge
+    redirect_to @repair, notice: "Intake photo was removed.", status: :see_other
+  end
+
   private
 
   def set_repair
-    @repair = Repair.includes(bike: :customer, repair_line_items: :service_catalog_item).find(params[:id])
+    @repair = Repair.with_attached_photos.with_rich_text_diagnosis
+      .includes(bike: :customer, repair_line_items: :service_catalog_item).find(params[:id])
   end
 
   def load_form_options
@@ -62,6 +73,7 @@ class RepairsController < ApplicationController
     params.expect(repair: [
       :bike_id, :intake_staff_id, :assigned_staff_id, :promised_on, :status,
       :customer_approved, :approved_at, :quoted_at, :handed_back_at,
+      :diagnosis, photos: [],
       repair_line_items_attributes: [ [ :id, :service_catalog_item_id, :price_charged, :_destroy ] ]
     ])
   end

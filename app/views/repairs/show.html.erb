@@ -31,6 +31,31 @@
   <dd class="col-sm-9"><%= @repair.handed_back_at&.to_fs(:long) || "Not handed back" %></dd>
 </dl>
 
+<h2 class="h4 mt-5">Intake photos</h2>
+<% if @repair.photos.attached? %>
+  <div class="d-flex flex-wrap gap-3">
+    <% @repair.photos.each do |photo| %>
+      <figure class="mb-0">
+        <%= link_to rails_blob_path(photo, disposition: "inline"), target: "_blank", rel: "noopener" do %>
+          <%= image_tag photo.variant(:large), alt: "#{@repair.bike.make} #{@repair.bike.model}, repair ##{@repair.id} intake photo", class: "img-fluid rounded" %>
+        <% end %>
+        <figcaption class="mt-2">
+          <%= button_to "Remove photo", photo_repair_path(@repair, photo_id: photo.id), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Remove this intake photo?" } %>
+        </figcaption>
+      </figure>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-body-secondary">No intake photos have been added.</p>
+<% end %>
+
+<h2 class="h4 mt-5">Diagnosis</h2>
+<% if @repair.diagnosis.present? %>
+  <div class="border rounded p-3"><%= @repair.diagnosis %></div>
+<% else %>
+  <p class="text-body-secondary">No diagnosis has been written.</p>
+<% end %>
+
 <h2 class="h4 mt-5">Services charged</h2>
 <% if @repair.repair_line_items.any? %>
   <div class="table-responsive">

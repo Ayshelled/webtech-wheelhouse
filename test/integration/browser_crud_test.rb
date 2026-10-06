@@ -154,6 +154,177 @@ class BrowserCrudTest < ActionDispatch::IntegrationTest
     assert_not RepairLineItem.exists?(line_item.id)
   end
 
+  test "repair updates append intake photos and do not change them when no file is selected" do
+    repair = Repair.create!(bike: @bike, intake_staff: @staff, promised_on: Date.tomorrow, status: :tagged)
+    first_upload = fixture_file_upload(Rails.root.join("db/seeds/red-bicycle.jpg"), "image/jpeg")
+    repair.photos.attach(first_upload)
+    first_attachment_id = repair.photos.attachments.first.id
+
+    patch repair_path(repair), params: {
+      repair: {
+        bike_id: @bike.id,
+        intake_staff_id: @staff.id,
+        promised_on: Date.tomorrow,
+        status: "diagnosing"
+      }
+    }
+
+    assert_redirected_to repair_path(repair)
+    assert_equal [ first_attachment_id ], repair.reload.photos.attachments.map(&:id)
+
+    second_upload = fixture_file_upload(Rails.root.join("db/seeds/vintage-bicycles.jpg"), "image/jpeg")
+    patch repair_path(repair), params: {
+      repair: {
+        bike_id: @bike.id,
+        intake_staff_id: @staff.id,
+        promised_on: Date.tomorrow,
+        status: "diagnosing",
+        photos: [ second_upload ]
+      }
+    }
+
+    assert_redirected_to repair_path(repair)
+    assert_equal 2, repair.reload.photos.attachments.count
+
+    attachment = repair.photos.attachments.find { |photo| photo.id != first_attachment_id }
+    assert_difference [ "ActiveStorage::Attachment.count", "ActiveStorage::Blob.count" ], -1 do
+      delete photo_repair_path(repair, photo_id: attachment.id)
+    end
+    assert_response :see_other
+    assert_equal [ first_attachment_id ], repair.reload.photos.attachments.map(&:id)
+  end
+
+  test "mixed invalid photo uploads are rejected without attaching any file" do
+    repair = Repair.create!(bike: @bike, intake_staff: @staff, promised_on: Date.tomorrow, status: :tagged)
+    original_upload = fixture_file_upload(Rails.root.join("db/seeds/red-bicycle.jpg"), "image/jpeg")
+    repair.photos.attach(original_upload)
+    original_attachment_id = repair.photos.attachments.first.id
+    valid_upload = fixture_file_upload(Rails.root.join("db/seeds/vintage-bicycles.jpg"), "image/jpeg")
+    invalid_upload = ActionDispatch::Http::UploadedFile.new(
+      tempfile: StringIO.new("%PDF-1.4\n"),
+      filename: "service-manual.pdf",
+      type: "application/pdf"
+    )
+
+    assert_no_difference [ "ActiveStorage::Attachment.count", "ActiveStorage::Blob.count" ] do
+      patch repair_path(repair), params: {
+        repair: {
+          bike_id: @bike.id,
+          intake_staff_id: @staff.id,
+          promised_on: Date.tomorrow,
+          status: "diagnosing",
+          photos: [ valid_upload, invalid_upload ]
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select ".invalid-feedback", text: /service-manual\.pdf.*JPEG or PNG/
+    assert_select 'select[name="repair[status]"] option[selected]', text: "Diagnosing"
+    assert_equal [ original_attachment_id ], repair.reload.photos.attachments.map(&:id)
+  end
+
+  test "oversized intake photos are rejected with a filename and size message" do
+    repair = Repair.create!(bike: @bike, intake_staff: @staff, promised_on: Date.tomorrow, status: :tagged)
+    tempfile = Tempfile.new([ "oversized-photo", ".jpg" ])
+    tempfile.binmode
+    tempfile.write(File.binread(Rails.root.join("db/seeds/red-bicycle.jpg")))
+    tempfile.write("\0" * 5.megabytes)
+    tempfile.rewind
+    upload = Rack::Test::UploadedFile.new(
+      tempfile.path,
+      "image/jpeg",
+      original_filename: "oversized-intake.jpg"
+    )
+
+    assert_no_difference [ "ActiveStorage::Attachment.count", "ActiveStorage::Blob.count" ] do
+      patch repair_path(repair), params: {
+        repair: {
+          bike_id: @bike.id,
+          intake_staff_id: @staff.id,
+          promised_on: Date.tomorrow,
+          status: "tagged",
+          photos: [ upload ]
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select ".invalid-feedback", text: /oversized-intake\.jpg.*no larger than 5 MB/
+  ensure
+    tempfile&.close!
+  end
+
+  test "diagnosis HTML is rendered through Action Text without executable markup" do
+    repair = Repair.create!(bike: @bike, intake_staff: @staff, promised_on: Date.tomorrow, status: :tagged)
+    repair.diagnosis = '<p>Check the chain</p><script>alert("unsafe")</script><img src="x" onerror="alert(1)">'
+    repair.save!
+
+    get repair_path(repair)
+
+    assert_response :success
+    assert_select ".trix-content script", count: 0
+    assert_select ".trix-content img[onerror]", count: 0
+
+    get repairs_path
+    assert_response :success
+    assert_select ".repair-diagnosis", text: /Check the chain/
+  end
+
+  test "destroying a repair removes its photo and rich text records" do
+    repair = Repair.create!(bike: @bike, intake_staff: @staff, promised_on: Date.tomorrow, status: :tagged)
+    repair.diagnosis = "<strong>Check the chain</strong>"
+    repair.save!
+    repair.photos.attach(fixture_file_upload(Rails.root.join("db/seeds/red-bicycle.jpg"), "image/jpeg"))
+
+    assert_difference [
+      "Repair.count",
+      "ActiveStorage::Attachment.count",
+      "ActionText::RichText.count"
+    ], -1 do
+      delete repair_path(repair)
+    end
+    assert_response :see_other
+    assert_not ActiveStorage::Attachment.exists?(record: repair)
+    assert_not ActionText::RichText.exists?(record: repair)
+  end
+
+  test "repair index, bike, and detail pages keep their select count fixed as attachments grow" do
+    repair = Repair.create!(bike: @bike, intake_staff: @staff, promised_on: Date.tomorrow, status: :tagged)
+    repair.photos.attach(fixture_file_upload(Rails.root.join("db/seeds/red-bicycle.jpg"), "image/jpeg"))
+
+    index_queries_before = count_select_queries(repairs_path)
+    5.times do |index|
+      extra_repair = Repair.create!(
+        bike: @bike,
+        intake_staff: @staff,
+        promised_on: Date.tomorrow + index + 1,
+        status: :tagged
+      )
+      extra_repair.photos.attach(fixture_file_upload(Rails.root.join("db/seeds/vintage-bicycles.jpg"), "image/jpeg"))
+    end
+    assert_equal index_queries_before, count_select_queries(repairs_path)
+
+    bike_queries_before = count_select_queries(bike_path(@bike))
+    5.times do |index|
+      extra_repair = Repair.create!(
+        bike: @bike,
+        intake_staff: @staff,
+        promised_on: Date.tomorrow + index + 10,
+        status: :tagged
+      )
+      extra_repair.photos.attach(fixture_file_upload(Rails.root.join("db/seeds/damaged-bicycle.jpg"), "image/jpeg"))
+    end
+    bike_queries_after = count_select_queries(bike_path(@bike))
+    assert_equal bike_queries_before, bike_queries_after, @last_select_queries.join("\n")
+
+    detail_queries_before = count_select_queries(repair_path(repair))
+    3.times do
+      repair.photos.attach(fixture_file_upload(Rails.root.join("db/seeds/vintage-bicycles.jpg"), "image/jpeg"))
+    end
+    assert_equal detail_queries_before, count_select_queries(repair_path(repair))
+  end
+
   test "destroy of a record that does not exist returns not found" do
     delete customer_path("missing")
 
@@ -174,6 +345,10 @@ class BrowserCrudTest < ActionDispatch::IntegrationTest
       get path
       assert_response :success, "Expected #{path} to render"
     end
+
+    get repair_path(repair)
+    assert_select "p", text: "No intake photos have been added."
+    assert_select "p", text: "No diagnosis has been written."
   end
 
   test "deleting a bike cascades through its repairs and service lines" do
@@ -187,5 +362,26 @@ class BrowserCrudTest < ActionDispatch::IntegrationTest
     assert_response :see_other
     assert_redirected_to bikes_path
     assert_not RepairLineItem.exists?(line_item.id)
+  end
+
+  private
+
+  def count_select_queries(path)
+    count = 0
+    @last_select_queries = []
+    ActiveRecord::Base.connection.clear_query_cache
+    subscriber = lambda do |_name, _start, _finish, _id, payload|
+      if payload[:sql].lstrip.start_with?("SELECT") && !payload[:cached] && payload[:name] != "SCHEMA"
+        count += 1
+        @last_select_queries << payload[:sql]
+      end
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
+      get path
+    end
+
+    assert_response :success
+    count
   end
 end

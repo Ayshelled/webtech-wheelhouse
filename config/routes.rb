@@ -2,7 +2,9 @@ Rails.application.routes.draw do
   root "pages#home"
   resources :customers
   resources :bikes
-  resources :repairs
+  resources :repairs do
+    delete "photos/:photo_id", action: :remove_photo, as: :photo, on: :member
+  end
   resources :service_catalog_items, path: "services"
   resources :staffs
   get "/visit", to: "pages#visit", as: :visit

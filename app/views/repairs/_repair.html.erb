@@ -1,7 +1,15 @@
 <tr class="<%= "table-danger" if repair.overdue? %>">
+  <td>
+    <div class="repair-thumbnail ratio ratio-4x3">
+      <% if repair.photos.attached? %>
+        <%= image_tag repair.photos.first.variant(:thumbnail), alt: "#{repair.bike.make} #{repair.bike.model}, repair ##{repair.id} intake photo", class: "rounded object-fit-cover" %>
+      <% end %>
+    </div>
+  </td>
   <td><%= link_to "Repair ##{repair.id}", repair_path(repair) %></td>
   <td><%= link_to "#{repair.bike.make} #{repair.bike.model}", bike_path(repair.bike) %></td>
   <td><%= link_to repair.bike.customer.name, customer_path(repair.bike.customer) %></td>
+  <td class="repair-diagnosis"><%= repair.diagnosis.to_plain_text.squish.truncate(100).presence || "No diagnosis" %></td>
   <td><span class="badge text-bg-secondary"><%= repair.status.humanize %></span></td>
   <td><%= repair.promised_on.strftime("%-d %B %Y") %></td>
 </tr>

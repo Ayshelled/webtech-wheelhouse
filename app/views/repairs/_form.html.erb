@@ -32,6 +32,19 @@
   </div>
 
   <div class="mb-3">
+    <%= form.label :photos, "Intake photos", class: "form-label" %>
+    <%= form.file_field :photos, multiple: true, accept: "image/jpeg,image/png", class: field_class(repair, :photos) %>
+    <div class="form-text">JPEG or PNG; each image must be 5 MB or smaller. New photos are added to existing photos.</div>
+    <%= field_error_messages(repair, :photos) %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :diagnosis, class: "form-label" %>
+    <%= form.rich_text_area :diagnosis, class: field_class(repair, :diagnosis) %>
+    <%= field_error_messages(repair, :diagnosis) %>
+  </div>
+
+  <div class="mb-3">
     <%= form.label :customer_approved, "Customer approval", class: "form-label" %>
     <%= form.select :customer_approved, [["Pending", ""], ["Yes", true], ["No", false]], {}, class: field_class(repair, :customer_approved, "form-select") %>
     <%= field_error_messages(repair, :customer_approved) %>
