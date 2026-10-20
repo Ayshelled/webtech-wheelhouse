@@ -59,5 +59,43 @@ The bicycle seed images are CC0/Public Domain Mark images:
 - “Demolished bicycle on the bridge at the end of Kinkerstraat” by Amsterdam free photos & pictures of the Dutch city — https://www.flickr.com/photos/104736837@N03/10903156366
 - “A bicycle wheel in the snow” by Amsterdam free photos & pictures of the Dutch city — https://www.flickr.com/photos/104736837@N03/27625575802
 
+## API
+
+The versioned JSON API is available at `http://localhost:3000/api/v1`. Start the application
+with `bin/dev` and configure a private bearer token in Rails' encrypted credentials:
+
+```bash
+EDITOR="nano" bin/rails credentials:edit
+```
+
+Add the following YAML, replacing the placeholder with a strong random token:
+
+```yaml
+api:
+  token: "replace-with-a-private-random-token"
+```
+
+Do not commit or share `config/master.key`; if you do not have it locally, obtain it securely
+from the project owner. For the personal page to load the public price list, serve
+[webtech-lab-01](https://ayshelled.github.io/webtech-lab-01/) locally on port `5500` while
+the API runs on port `3000`. Use `http://127.0.0.1:5500`; CORS allows only that local origin
+and the published page origin.
+From the page repository's directory, start its local server with
+`python3 -m http.server --bind 127.0.0.1 5500`.
+
+The public price list can be read without a token:
+
+```bash
+curl -i http://localhost:3000/api/v1/services
+```
+
+Repairs require the bearer token configured above:
+
+```bash
+curl -i http://localhost:3000/api/v1/repairs \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+See [docs/api.md](docs/api.md) for the complete routes, document shapes, and API decisions.
 
 - [docs/](docs/)
