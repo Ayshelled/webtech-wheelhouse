@@ -23,7 +23,8 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
       <div class="container">
-        <%= link_to "Wheelhouse", root_path, class: "navbar-brand fw-semibold" %>
+        <% signed_in = authenticated? %>
+        <%= link_to "Wheelhouse", signed_in ? root_path : service_catalog_items_path, class: "navbar-brand fw-semibold" %>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -32,29 +33,39 @@
         <div class="collapse navbar-collapse" id="mainNavbar">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <%= link_to "Home", root_path, class: "nav-link #{'active' if current_page?(root_path)}" %>
-            </li>
-            <li class="nav-item">
-              <%= link_to "Customers", customers_path, class: "nav-link #{'active' if current_page?(customers_path)}" %>
-            </li>
-            <li class="nav-item">
-              <%= link_to "Bikes", bikes_path, class: "nav-link #{'active' if current_page?(bikes_path)}" %>
-            </li>
-            <li class="nav-item">
-              <%= link_to "Repairs", repairs_path, class: "nav-link #{'active' if current_page?(repairs_path)}" %>
-            </li>
-            <li class="nav-item">
               <%= link_to "Services", service_catalog_items_path, class: "nav-link #{'active' if current_page?(service_catalog_items_path)}" %>
             </li>
-            <li class="nav-item">
-              <%= link_to "Staff", staffs_path, class: "nav-link #{'active' if current_page?(staffs_path)}" %>
-            </li>
-            <li class="nav-item">
-              <%= link_to "Visit", visit_path, class: "nav-link #{'active' if current_page?(visit_path)}" %>
-            </li>
-            <li class="nav-item">
-              <%= link_to "About", about_path, class: "nav-link #{'active' if current_page?(about_path)}" %>
-            </li>
+            <% if signed_in %>
+              <li class="nav-item">
+                <%= link_to "Home", root_path, class: "nav-link #{'active' if current_page?(root_path)}" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Customers", customers_path, class: "nav-link #{'active' if current_page?(customers_path)}" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Bikes", bikes_path, class: "nav-link #{'active' if current_page?(bikes_path)}" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Repairs", repairs_path, class: "nav-link #{'active' if current_page?(repairs_path)}" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Staff", staffs_path, class: "nav-link #{'active' if current_page?(staffs_path)}" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Visit", visit_path, class: "nav-link #{'active' if current_page?(visit_path)}" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "About", about_path, class: "nav-link #{'active' if current_page?(about_path)}" %>
+              </li>
+              <li class="nav-item d-flex align-items-center gap-2 ms-lg-3">
+                <span class="navbar-text"><%= Current.user.display_name %> (<%= Current.user.role.humanize %>)</span>
+                <%= button_to "Sign out", session_path, method: :delete, class: "btn btn-sm btn-outline-secondary" %>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <%= link_to "Sign in", new_session_path, class: "nav-link #{'active' if current_page?(new_session_path)}" %>
+              </li>
+            <% end %>
           </ul>
         </div>
       </div>

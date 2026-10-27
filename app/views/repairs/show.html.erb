@@ -21,6 +21,8 @@
   <dd class="col-sm-9"><span class="badge text-bg-secondary"><%= @repair.status.humanize %></span></dd>
   <dt class="col-sm-3">Promised on</dt>
   <dd class="col-sm-9"><%= @repair.promised_on.strftime("%-d %B %Y") %></dd>
+  <dt class="col-sm-3">Taken in by</dt>
+  <dd class="col-sm-9"><%= @repair.intake_user&.display_name || "Not recorded" %></dd>
   <dt class="col-sm-3">Customer approved</dt>
   <dd class="col-sm-9"><%= @repair.customer_approved.nil? ? "Pending" : (@repair.customer_approved ? "Yes" : "No") %></dd>
   <dt class="col-sm-3">Approved at</dt>

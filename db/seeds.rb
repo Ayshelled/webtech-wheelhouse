@@ -44,13 +44,37 @@ staff_records = {}
   ["Maya Singh", "Mechanic"],
   ["Tom Bennett", "Mechanic"],
   ["Lucia Moretti", "Mechanic"],
-  ["Evan Brooks", "Counter staff"]
+  ["Evan Brooks", "Counter staff"],
+  ["Nora Ellis", "Owner"]
 ].each do |name, role|
   staff = Staff.find_or_initialize_by(name: name)
   staff.role = role
   staff.save!
   staff_records[name] = staff
 end
+
+seed_user_passwords = {
+  "Nora Ellis" => [ "nora@wheelhouse.test", "OwnerNoraWheelhouse26!", :owner ],
+  "Maya Singh" => [ "maya@wheelhouse.test", "MechanicMaya26!", :mechanic ],
+  "Tom Bennett" => [ "tom@wheelhouse.test", "MechanicTom26!", :mechanic ],
+  "Lucia Moretti" => [ "lucia@wheelhouse.test", "MechanicLucia26!", :mechanic ],
+  "Evan Brooks" => [ "evan@wheelhouse.test", "CounterEvan26!", :counter ]
+}
+seed_users = {}
+seed_user_passwords.each do |staff_name, (email_address, password, role)|
+  user = User.find_or_initialize_by(email_address: email_address)
+  user.staff = staff_records.fetch(staff_name)
+  user.role = role
+  user.password = password if user.new_record? || !user.authenticate(password)
+  user.password_confirmation = password if user.password.present?
+  user.save!
+  seed_users[staff_name] = user
+end
+
+default_user = User.find_or_initialize_by(email_address: "new.counter@wheelhouse.test")
+default_user.password = "DefaultCounter26!" if default_user.new_record? || !default_user.authenticate("DefaultCounter26!")
+default_user.password_confirmation = "DefaultCounter26!" if default_user.password.present?
+default_user.save!
 
 customer_records = {}
 [
@@ -131,6 +155,7 @@ repairs.each do |serial, status, approved, approved_at, quoted_at, promised_offs
   repair.approved_at = approved_at
   repair.quoted_at = quoted_at
   repair.handed_back_at = status == "Picked Up" ? today - 1.day : nil
+  repair.intake_user = seed_users.fetch("Evan Brooks") unless [ [ "TRK-M7-001", 0 ], [ "KO-DP-001", 1 ] ].include?([ serial, promised_offset ])
   repair.save!
 
   if status != "Tagged" && repair.diagnosis.to_plain_text.blank?

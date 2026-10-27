@@ -41,3 +41,10 @@ whoever's holding the bike at intake.
 bike and when. I'd replace it with a `bike_ownerships` join table (`bike_id`, `customer_id`,
 `started_at`, `ended_at`), so the shop could show not just who owns a bike now but who owned it during
 a specific past repair.
+
+## 4. Which account role is the default?
+
+**Decision:** New accounts default to `counter`. Counter staff can record a drop-off and communicate
+with customers, while owner and mechanic accounts identify people with additional workshop
+responsibilities. A new or unassigned account should receive the least privileged role rather than
+owner or mechanic privileges.

@@ -3,7 +3,8 @@ class RepairsController < ApplicationController
   before_action :load_form_options, only: %i[new edit create update]
 
   def index
-    @repairs = Repair.with_attached_photos.with_rich_text_diagnosis.includes(bike: :customer).by_promised_on
+    @repairs = Repair.with_attached_photos.with_rich_text_diagnosis
+      .includes({ intake_user: :staff }, bike: :customer).by_promised_on
   end
 
   def show
@@ -20,6 +21,7 @@ class RepairsController < ApplicationController
 
   def create
     @repair = Repair.new(repair_params)
+    @repair.intake_user = Current.user
     if @repair.save
       redirect_to @repair, notice: "Repair ##{@repair.id} was created."
     else
@@ -59,7 +61,7 @@ class RepairsController < ApplicationController
 
   def set_repair
     @repair = Repair.with_attached_photos.with_rich_text_diagnosis
-      .includes(bike: :customer, repair_line_items: :service_catalog_item).find(params[:id])
+      .includes({ intake_user: :staff }, bike: :customer, repair_line_items: :service_catalog_item).find(params[:id])
   end
 
   def load_form_options

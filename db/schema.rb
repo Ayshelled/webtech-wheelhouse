@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_202759) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_27_222737) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -88,6 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_202759) do
     t.boolean "customer_approved"
     t.datetime "handed_back_at"
     t.bigint "intake_staff_id", null: false
+    t.bigint "intake_user_id"
     t.date "promised_on", null: false
     t.datetime "quoted_at"
     t.string "status", default: "Tagged", null: false
@@ -95,6 +96,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_202759) do
     t.index ["assigned_staff_id"], name: "index_repairs_on_assigned_staff_id"
     t.index ["bike_id"], name: "index_repairs_on_bike_id"
     t.index ["intake_staff_id"], name: "index_repairs_on_intake_staff_id"
+    t.index ["intake_user_id"], name: "index_repairs_on_intake_user_id"
   end
 
   create_table "service_catalog_items", force: :cascade do |t|
@@ -105,11 +107,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_202759) do
     t.index ["name"], name: "index_service_catalog_items_on_name", unique: true
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
   create_table "staffs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.string "role", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email_address", null: false
+    t.string "password_digest", null: false
+    t.string "role", default: "counter", null: false
+    t.bigint "staff_id"
+    t.datetime "updated_at", null: false
+    t.index "lower((email_address)::text)", name: "index_users_on_lower_email_address", unique: true
+    t.index ["staff_id"], name: "index_users_on_staff_id", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -120,4 +142,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_202759) do
   add_foreign_key "repairs", "bikes"
   add_foreign_key "repairs", "staffs", column: "assigned_staff_id"
   add_foreign_key "repairs", "staffs", column: "intake_staff_id"
+  add_foreign_key "repairs", "users", column: "intake_user_id"
+  add_foreign_key "sessions", "users"
+  add_foreign_key "users", "staffs"
 end

@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  resource :session
+  resources :passwords, param: :token
+  get "sign_up", to: "users#new", as: :sign_up
+  post "sign_up", to: "users#create"
   namespace :api do
     namespace :v1, defaults: { format: :json } do
       resources :services, only: %i[index show create]

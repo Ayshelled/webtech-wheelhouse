@@ -59,6 +59,24 @@ The bicycle seed images are CC0/Public Domain Mark images:
 - “Demolished bicycle on the bridge at the end of Kinkerstraat” by Amsterdam free photos & pictures of the Dutch city — https://www.flickr.com/photos/104736837@N03/10903156366
 - “A bicycle wheel in the snow” by Amsterdam free photos & pictures of the Dutch city — https://www.flickr.com/photos/104736837@N03/27625575802
 
+## Development accounts and email
+
+The seed accounts below are for local development only. Do not use these credentials in a deployed
+application.
+
+| Account | Role | Password |
+|---|---|---|
+| nora@wheelhouse.test | owner | OwnerNoraWheelhouse26! |
+| maya@wheelhouse.test | mechanic | MechanicMaya26! |
+| tom@wheelhouse.test | mechanic | MechanicTom26! |
+| lucia@wheelhouse.test | mechanic | MechanicLucia26! |
+| evan@wheelhouse.test | counter | CounterEvan26! |
+| new.counter@wheelhouse.test | counter (default) | DefaultCounter26! |
+
+Development password-reset and welcome emails are saved as `.eml` files under `tmp/mail/`. Open a
+message there and follow its local application link to complete the reset flow. No external mail
+provider or SMTP server is configured.
+
 ## API
 
 The versioned JSON API is available at `http://localhost:3000/api/v1`. Start the application

@@ -1,6 +1,7 @@
 class Repair < ApplicationRecord
     belongs_to :bike
     belongs_to :intake_staff, class_name: "Staff"
+    belongs_to :intake_user, class_name: "User", optional: true
     belongs_to :assigned_staff, class_name: "Staff", optional: true
     has_many :repair_line_items, -> { by_repair }, dependent: :destroy
     has_many :services, through: :repair_line_items, source: :service_catalog_item, dependent: :restrict_with_error

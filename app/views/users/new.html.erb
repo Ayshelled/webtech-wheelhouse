@@ -1,0 +1,33 @@
+<% content_for :title, "Create an account" %>
+
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <h1 class="mb-4">Create an account</h1>
+
+    <%= form_with model: @user, url: sign_up_path do |form| %>
+      <%= render "shared/form_errors", record: @user %>
+
+      <div class="mb-3">
+        <%= form.label :email_address, "Email address", class: "form-label" %>
+        <%= form.email_field :email_address, required: true, autocomplete: "username",
+          class: field_class(@user, :email_address) %>
+        <%= field_error_messages(@user, :email_address) %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :password, "Password", class: "form-label" %>
+        <%= form.password_field :password, required: true, autocomplete: "new-password",
+          class: field_class(@user, :password) %>
+        <div class="form-text">Use at least 10 characters.</div>
+        <%= field_error_messages(@user, :password) %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :password_confirmation, "Confirm password", class: "form-label" %>
+        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password",
+          class: field_class(@user, :password_confirmation) %>
+        <%= field_error_messages(@user, :password_confirmation) %>
+      </div>
+      <%= form.submit "Create account", class: "btn btn-primary" %>
+      <%= link_to "Cancel", new_session_path, class: "btn btn-outline-secondary" %>
+    <% end %>
+  </div>
+</div>

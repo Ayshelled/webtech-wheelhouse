@@ -8,7 +8,7 @@ class BikesController < ApplicationController
 
   def show
     @repairs = @bike.repairs.with_attached_photos.with_rich_text_diagnosis
-      .includes(bike: :customer).by_promised_on
+      .includes({ intake_user: :staff }, bike: :customer).by_promised_on
   end
 
   def new

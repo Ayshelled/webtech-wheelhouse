@@ -4,6 +4,13 @@ class BrowserCrudTest < ActionDispatch::IntegrationTest
   setup do
     @customer = Customer.create!(name: "Casey Example", phone: "555-0100")
     @staff = Staff.create!(name: "Morgan Mechanic", role: "Mechanic")
+    @user = User.create!(
+      email_address: "morgan@example.test",
+      password: "MorganMechanic26!",
+      staff: @staff,
+      role: :mechanic
+    )
+    sign_in_as(@user)
     @bike = Bike.create!(customer: @customer, make: "Trek", model: "FX", serial_number: "TEST-001")
     @service = ServiceCatalogItem.create!(name: "Test tune-up", price: 80)
   end
@@ -57,6 +64,7 @@ class BrowserCrudTest < ActionDispatch::IntegrationTest
   end
 
   test "repair saves selected lines and ignores unused lines" do
+    forged_user = User.create!(email_address: "forged@example.test", password: "AnotherPassword26!")
     assert_difference "Repair.count" do
       assert_difference "RepairLineItem.count" do
         post repairs_path, params: {
@@ -70,6 +78,7 @@ class BrowserCrudTest < ActionDispatch::IntegrationTest
             approved_at: "",
             quoted_at: "",
             handed_back_at: "",
+            intake_user_id: forged_user.id,
             repair_line_items_attributes: {
               "0" => { service_catalog_item_id: @service.id, price_charged: "52.50" },
               "1" => { service_catalog_item_id: "", price_charged: "0" }
@@ -83,6 +92,7 @@ class BrowserCrudTest < ActionDispatch::IntegrationTest
     assert_redirected_to repair_path(repair)
     assert_equal BigDecimal("52.50"), repair.repair_line_items.first.price_charged
     assert_nil repair.assigned_staff_id
+    assert_equal @user, repair.intake_user
   end
 
   test "zero-priced repair line is refused with field errors and empty slots" do
