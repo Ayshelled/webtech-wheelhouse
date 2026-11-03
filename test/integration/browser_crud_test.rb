@@ -3,12 +3,12 @@ require "test_helper"
 class BrowserCrudTest < ActionDispatch::IntegrationTest
   setup do
     @customer = Customer.create!(name: "Casey Example", phone: "555-0100")
-    @staff = Staff.create!(name: "Morgan Mechanic", role: "Mechanic")
+    @staff = Staff.create!(name: "Morgan Owner", role: "Owner")
     @user = User.create!(
-      email_address: "morgan@example.test",
-      password: "MorganMechanic26!",
+      email_address: "morgan-owner@example.test",
+      password: "MorganOwner26!",
       staff: @staff,
-      role: :mechanic
+      role: :owner
     )
     sign_in_as(@user)
     @bike = Bike.create!(customer: @customer, make: "Trek", model: "FX", serial_number: "TEST-001")

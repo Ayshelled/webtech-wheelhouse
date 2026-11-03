@@ -3,22 +3,28 @@ class BikesController < ApplicationController
   before_action :load_form_options, only: %i[new edit create update]
 
   def index
-    @bikes = Bike.includes(:customer).by_name
+    authorize Bike
+    @bikes = policy_scope(Bike).includes(:customer).by_name
   end
 
   def show
-    @repairs = @bike.repairs.with_attached_photos.with_rich_text_diagnosis
+    authorize @bike
+    @repairs = policy_scope(Repair).where(bike_id: @bike.id)
+      .with_attached_photos.with_rich_text_diagnosis
       .includes({ intake_user: :staff }, bike: :customer).by_promised_on
   end
 
   def new
+    authorize Bike
     @bike = Bike.new(customer: Customer.find_by(id: params[:customer_id]))
   end
 
   def edit
+    authorize @bike
   end
 
   def create
+    authorize Bike
     @bike = Bike.new(bike_params)
     if @bike.save
       redirect_to @bike, notice: "Bike #{@bike.serial_number} was created."
@@ -28,6 +34,7 @@ class BikesController < ApplicationController
   end
 
   def update
+    authorize @bike
     if @bike.update(bike_params)
       redirect_to @bike, notice: "Bike #{@bike.serial_number} was updated."
     else
@@ -36,6 +43,7 @@ class BikesController < ApplicationController
   end
 
   def destroy
+    authorize @bike
     if @bike.destroy
       redirect_to bikes_path, notice: "Bike #{@bike.serial_number} was deleted.", status: :see_other
     else
@@ -46,7 +54,7 @@ class BikesController < ApplicationController
   private
 
   def set_bike
-    @bike = Bike.includes(:customer, repairs: { bike: :customer }).find(params[:id])
+    @bike = Bike.includes(:customer).find(params[:id])
   end
 
   def load_form_options

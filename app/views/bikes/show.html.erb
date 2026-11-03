@@ -6,15 +6,21 @@
     <h1><%= @bike.make %> <%= @bike.model %></h1>
   </div>
   <div class="d-flex flex-wrap gap-2">
-    <%= link_to "All bikes", bikes_path, class: "btn btn-outline-secondary" %>
-    <%= link_to "Edit bike", edit_bike_path(@bike), class: "btn btn-primary" %>
-    <%= button_to "Delete bike", @bike, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete bike #{@bike.serial_number}?" } %>
+    <% if policy(Bike).index? %>
+      <%= link_to "All bikes", bikes_path, class: "btn btn-outline-secondary" %>
+    <% end %>
+    <% if policy(@bike).edit? %>
+      <%= link_to "Edit bike", edit_bike_path(@bike), class: "btn btn-primary" %>
+    <% end %>
+    <% if policy(@bike).destroy? %>
+      <%= button_to "Delete bike", @bike, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete bike #{@bike.serial_number}?" } %>
+    <% end %>
   </div>
 </div>
 
 <dl class="row">
   <dt class="col-sm-3">Owner</dt>
-  <dd class="col-sm-9"><%= link_to @bike.customer.name, customer_path(@bike.customer) %></dd>
+  <dd class="col-sm-9"><%= policy(@bike.customer).show? ? link_to(@bike.customer.name, customer_path(@bike.customer)) : @bike.customer.name %></dd>
   <dt class="col-sm-3">Make</dt>
   <dd class="col-sm-9"><%= @bike.make %></dd>
   <dt class="col-sm-3">Model</dt>
@@ -24,8 +30,10 @@
 </dl>
 
 <h2 class="h4 mt-5">Repairs</h2>
-<p><%= link_to "Start a repair", new_repair_path(bike_id: @bike.id), class: "btn btn-outline-primary" %></p>
-<% if @bike.repairs.any? %>
+<% if policy(Repair).new? %>
+  <p><%= link_to "Start a repair", new_repair_path(bike_id: @bike.id), class: "btn btn-outline-primary" %></p>
+<% end %>
+<% if @repairs.any? %>
   <div class="table-responsive">
     <table class="table table-striped align-middle">
       <thead><tr><th>Photo</th><th>Repair</th><th>Bike</th><th>Customer</th><th>Taken in by</th><th>Diagnosis</th><th>Status</th><th>Promised on</th></tr></thead>

@@ -7,8 +7,12 @@
   </div>
   <div class="d-flex flex-wrap gap-2">
     <%= link_to "All staff", staffs_path, class: "btn btn-outline-secondary" %>
-    <%= link_to "Edit staff member", edit_staff_path(@staff), class: "btn btn-primary" %>
-    <%= button_to "Delete staff member", @staff, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete staff member #{@staff.name}?" } %>
+    <% if policy(@staff).edit? %>
+      <%= link_to "Edit staff member", edit_staff_path(@staff), class: "btn btn-primary" %>
+    <% end %>
+    <% if policy(@staff).destroy? %>
+      <%= button_to "Delete staff member", @staff, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete staff member #{@staff.name}?" } %>
+    <% end %>
   </div>
 </div>
 
@@ -20,9 +24,9 @@
 </dl>
 
 <h2 class="h4 mt-5">Repairs taken in</h2>
-<% if @staff.intake_repairs.any? %>
+<% if @intake_repairs.any? %>
   <ul>
-    <% @staff.intake_repairs.each do |repair| %>
+    <% @intake_repairs.each do |repair| %>
       <li><%= link_to "Repair ##{repair.id}", repair_path(repair) %></li>
     <% end %>
   </ul>
@@ -31,9 +35,9 @@
 <% end %>
 
 <h2 class="h4 mt-5">Repairs assigned</h2>
-<% if @staff.assigned_repairs.any? %>
+<% if @assigned_repairs.any? %>
   <ul>
-    <% @staff.assigned_repairs.each do |repair| %>
+    <% @assigned_repairs.each do |repair| %>
       <li><%= link_to "Repair ##{repair.id}", repair_path(repair) %></li>
     <% end %>
   </ul>

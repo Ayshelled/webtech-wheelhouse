@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  skip_after_action :verify_authorized, only: %i[new create]
   allow_unauthenticated_access only: %i[new create]
 
   def new

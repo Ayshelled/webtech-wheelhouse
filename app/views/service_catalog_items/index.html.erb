@@ -2,7 +2,9 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1 class="mb-0">Services</h1>
-  <%= link_to "New service", new_service_catalog_item_path, class: "btn btn-primary" %>
+  <% if policy(ServiceCatalogItem).new? %>
+    <%= link_to "New service", new_service_catalog_item_path, class: "btn btn-primary" %>
+  <% end %>
 </div>
 
 <% if @service_catalog_items.any? %>

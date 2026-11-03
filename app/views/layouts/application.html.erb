@@ -39,18 +39,24 @@
               <li class="nav-item">
                 <%= link_to "Home", root_path, class: "nav-link #{'active' if current_page?(root_path)}" %>
               </li>
-              <li class="nav-item">
-                <%= link_to "Customers", customers_path, class: "nav-link #{'active' if current_page?(customers_path)}" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Bikes", bikes_path, class: "nav-link #{'active' if current_page?(bikes_path)}" %>
-              </li>
+              <% if policy(Customer).index? %>
+                <li class="nav-item">
+                  <%= link_to "Customers", customers_path, class: "nav-link #{'active' if current_page?(customers_path)}" %>
+                </li>
+              <% end %>
+              <% if policy(Bike).index? %>
+                <li class="nav-item">
+                  <%= link_to "Bikes", bikes_path, class: "nav-link #{'active' if current_page?(bikes_path)}" %>
+                </li>
+              <% end %>
               <li class="nav-item">
                 <%= link_to "Repairs", repairs_path, class: "nav-link #{'active' if current_page?(repairs_path)}" %>
               </li>
-              <li class="nav-item">
-                <%= link_to "Staff", staffs_path, class: "nav-link #{'active' if current_page?(staffs_path)}" %>
-              </li>
+              <% if policy(Staff).index? %>
+                <li class="nav-item">
+                  <%= link_to "Staff", staffs_path, class: "nav-link #{'active' if current_page?(staffs_path)}" %>
+                </li>
+              <% end %>
               <li class="nav-item">
                 <%= link_to "Visit", visit_path, class: "nav-link #{'active' if current_page?(visit_path)}" %>
               </li>

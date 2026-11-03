@@ -3,20 +3,27 @@ class ServiceCatalogItemsController < ApplicationController
   before_action :set_service_catalog_item, only: %i[show edit update destroy]
 
   def index
-    @service_catalog_items = ServiceCatalogItem.by_name
+    authorize ServiceCatalogItem
+    @service_catalog_items = policy_scope(ServiceCatalogItem).by_name
   end
 
   def show
+    authorize @service_catalog_item
+    @repair_line_items = @service_catalog_item.repair_line_items.joins(:repair)
+      .merge(policy_scope(Repair)).includes(repair: { bike: :customer })
   end
 
   def new
+    authorize ServiceCatalogItem
     @service_catalog_item = ServiceCatalogItem.new
   end
 
   def edit
+    authorize @service_catalog_item
   end
 
   def create
+    authorize ServiceCatalogItem
     @service_catalog_item = ServiceCatalogItem.new(service_catalog_item_params)
     if @service_catalog_item.save
       redirect_to @service_catalog_item, notice: "Service #{@service_catalog_item.name} was created."
@@ -26,6 +33,7 @@ class ServiceCatalogItemsController < ApplicationController
   end
 
   def update
+    authorize @service_catalog_item
     if @service_catalog_item.update(service_catalog_item_params)
       redirect_to @service_catalog_item, notice: "Service #{@service_catalog_item.name} was updated."
     else
@@ -34,6 +42,7 @@ class ServiceCatalogItemsController < ApplicationController
   end
 
   def destroy
+    authorize @service_catalog_item
     if @service_catalog_item.destroy
       redirect_to service_catalog_items_path, notice: "Service #{@service_catalog_item.name} was deleted.", status: :see_other
     else

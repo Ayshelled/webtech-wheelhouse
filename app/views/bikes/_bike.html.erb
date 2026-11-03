@@ -1,5 +1,5 @@
 <tr>
-  <td><%= link_to "#{bike.make} #{bike.model}", bike_path(bike) %></td>
-  <td><%= link_to bike.customer.name, customer_path(bike.customer) %></td>
+  <td><%= policy(bike).show? ? link_to("#{bike.make} #{bike.model}", bike_path(bike)) : "#{bike.make} #{bike.model}" %></td>
+  <td><%= policy(bike.customer).show? ? link_to(bike.customer.name, customer_path(bike.customer)) : bike.customer.name %></td>
   <td><%= bike.serial_number %></td>
 </tr>

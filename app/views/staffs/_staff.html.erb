@@ -1,4 +1,4 @@
 <tr>
-  <td><%= link_to staff.name, staff_path(staff) %></td>
+  <td><%= policy(staff).show? ? link_to(staff.name, staff_path(staff)) : staff.name %></td>
   <td><%= staff.role %></td>
 </tr>

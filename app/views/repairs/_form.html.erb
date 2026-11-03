@@ -1,73 +1,97 @@
 <%= form_with model: repair do |form| %>
   <%= render "shared/form_errors", record: repair %>
+  <% permitted_attributes = policy(repair).permitted_attributes %>
 
+  <% if permitted_attributes.include?(:bike_id) %>
   <div class="mb-3">
     <%= form.label :bike_id, "Bike", class: "form-label" %>
     <%= form.collection_select :bike_id, bikes, :id, ->(bike) { "#{bike.make} #{bike.model} - #{bike.serial_number} (#{bike.customer.name})" }, { prompt: "Choose a bike" }, class: field_class(repair, :bike, "form-select") %>
     <%= field_error_messages(repair, :bike) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.include?(:intake_staff_id) %>
   <div class="mb-3">
     <%= form.label :intake_staff_id, "Taken in by", class: "form-label" %>
     <%= form.collection_select :intake_staff_id, staffs, :id, :name, { prompt: "Choose a staff member" }, class: field_class(repair, :intake_staff, "form-select") %>
     <%= field_error_messages(repair, :intake_staff) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.include?(:assigned_staff_id) %>
   <div class="mb-3">
     <%= form.label :assigned_staff_id, "Assigned mechanic", class: "form-label" %>
     <%= form.collection_select :assigned_staff_id, mechanics, :id, :name, { include_blank: "Unassigned" }, class: field_class(repair, :assigned_staff, "form-select") %>
     <%= field_error_messages(repair, :assigned_staff) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.include?(:promised_on) %>
   <div class="mb-3">
     <%= form.label :promised_on, class: "form-label" %>
     <%= form.date_field :promised_on, class: field_class(repair, :promised_on) %>
     <%= field_error_messages(repair, :promised_on) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.include?(:status) %>
   <div class="mb-3">
     <%= form.label :status, class: "form-label" %>
     <%= form.select :status, Repair.statuses.keys.map { |status| [status.humanize, status] }, {}, class: field_class(repair, :status, "form-select") %>
     <%= field_error_messages(repair, :status) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.any? { |attribute| attribute.is_a?(Hash) && attribute.key?(:photos) } %>
   <div class="mb-3">
     <%= form.label :photos, "Intake photos", class: "form-label" %>
     <%= form.file_field :photos, multiple: true, accept: "image/jpeg,image/png", class: field_class(repair, :photos) %>
     <div class="form-text">JPEG or PNG; each image must be 5 MB or smaller. New photos are added to existing photos.</div>
     <%= field_error_messages(repair, :photos) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.include?(:diagnosis) %>
   <div class="mb-3">
     <%= form.label :diagnosis, class: "form-label" %>
     <%= form.rich_text_area :diagnosis, class: field_class(repair, :diagnosis) %>
     <%= field_error_messages(repair, :diagnosis) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.include?(:customer_approved) %>
   <div class="mb-3">
     <%= form.label :customer_approved, "Customer approval", class: "form-label" %>
     <%= form.select :customer_approved, [["Pending", ""], ["Yes", true], ["No", false]], {}, class: field_class(repair, :customer_approved, "form-select") %>
     <%= field_error_messages(repair, :customer_approved) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.include?(:approved_at) %>
   <div class="mb-3">
     <%= form.label :approved_at, class: "form-label" %>
     <%= form.datetime_local_field :approved_at, class: field_class(repair, :approved_at) %>
     <%= field_error_messages(repair, :approved_at) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.include?(:quoted_at) %>
   <div class="mb-3">
     <%= form.label :quoted_at, class: "form-label" %>
     <%= form.datetime_local_field :quoted_at, class: field_class(repair, :quoted_at) %>
     <%= field_error_messages(repair, :quoted_at) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.include?(:handed_back_at) %>
   <div class="mb-3">
     <%= form.label :handed_back_at, class: "form-label" %>
     <%= form.datetime_local_field :handed_back_at, class: field_class(repair, :handed_back_at) %>
     <%= field_error_messages(repair, :handed_back_at) %>
   </div>
+  <% end %>
 
+  <% if permitted_attributes.any? { |attribute| attribute.is_a?(Hash) && attribute.key?(:repair_line_items_attributes) } %>
   <fieldset class="mb-4">
     <legend class="h5">Services charged</legend>
     <% repair.repair_line_items.each_with_index do |line_item, index| %>
@@ -94,6 +118,7 @@
       <% end %>
     <% end %>
   </fieldset>
+  <% end %>
 
   <div class="d-flex gap-2">
     <%= form.submit class: "btn btn-primary" %>

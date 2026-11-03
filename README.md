@@ -17,7 +17,13 @@ Documentation for the project lives in the docs directory.
 
 ## Setup
 
-1. Clone the repository and enter its directory.
+1. Install the prerequisites above, then clone and enter the repository:
+
+   ```bash
+   git clone https://github.com/Ayshelled/webtech-wheelhouse.git
+   cd webtech-wheelhouse
+   ```
+
 2. Install Ruby and JavaScript dependencies:
 
    ```bash
@@ -25,7 +31,7 @@ Documentation for the project lives in the docs directory.
    npm install
    ```
 
-3. Ensure PostgreSQL is running and that your local PostgreSQL role can create databases. If your role or connection differs from the defaults, set `DATABASE_URL` to a PostgreSQL connection URL before running Rails commands.
+3. Ensure PostgreSQL 16 is running and that your local PostgreSQL role can create databases. If your role or connection differs from the defaults, set `DATABASE_URL` to a PostgreSQL connection URL before running Rails commands.
 4. Create the database, load the schema, and seed the data (including repair photos):
 
    ```bash
@@ -64,14 +70,17 @@ The bicycle seed images are CC0/Public Domain Mark images:
 The seed accounts below are for local development only. Do not use these credentials in a deployed
 application.
 
-| Account | Role | Password |
-|---|---|---|
-| nora@wheelhouse.test | owner | OwnerNoraWheelhouse26! |
-| maya@wheelhouse.test | mechanic | MechanicMaya26! |
-| tom@wheelhouse.test | mechanic | MechanicTom26! |
-| lucia@wheelhouse.test | mechanic | MechanicLucia26! |
-| evan@wheelhouse.test | counter | CounterEvan26! |
-| new.counter@wheelhouse.test | counter (default) | DefaultCounter26! |
+| Account | Role | Password | Permissions |
+|---|---|---|---|
+| nora@wheelhouse.test | owner | OwnerNoraWheelhouse26! | Manages customers, bikes, repairs, staff, and services, including handed-back repairs; [permissions](docs/permissions.md). |
+| maya@wheelhouse.test | mechanic | MechanicMaya26! | Reads repairs assigned to Maya; updates her open repairs' status, diagnosis, and intake photos; [permissions](docs/permissions.md). |
+| tom@wheelhouse.test | mechanic | MechanicTom26! | Reads repairs assigned to Tom; updates his open repairs' status, diagnosis, and intake photos; [permissions](docs/permissions.md). |
+| lucia@wheelhouse.test | mechanic | MechanicLucia26! | Reads repairs assigned to Lucia; updates her open repairs' status, diagnosis, and intake photos; [permissions](docs/permissions.md). |
+| evan@wheelhouse.test | counter | CounterEvan26! | Manages customers and bikes; reads all repairs and staff, and updates repairs not handed back; [permissions](docs/permissions.md). |
+| new.counter@wheelhouse.test | counter (default) | DefaultCounter26! | Reads all repairs and staff; manages customers and bikes, and updates repairs not handed back; [permissions](docs/permissions.md). |
+
+New sign-ups default to the counter role and have exactly the counter permissions in
+[docs/permissions.md](docs/permissions.md).
 
 Development password-reset and welcome emails are saved as `.eml` files under `tmp/mail/`. Open a
 message there and follow its local application link to complete the reset flow. No external mail

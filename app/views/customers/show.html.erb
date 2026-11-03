@@ -6,9 +6,15 @@
     <h1><%= @customer.name %></h1>
   </div>
   <div class="d-flex flex-wrap gap-2">
-    <%= link_to "All customers", customers_path, class: "btn btn-outline-secondary" %>
-    <%= link_to "Edit customer", edit_customer_path(@customer), class: "btn btn-primary" %>
-    <%= button_to "Delete customer", @customer, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete customer #{@customer.name}?" } %>
+    <% if policy(Customer).index? %>
+      <%= link_to "All customers", customers_path, class: "btn btn-outline-secondary" %>
+    <% end %>
+    <% if policy(@customer).edit? %>
+      <%= link_to "Edit customer", edit_customer_path(@customer), class: "btn btn-primary" %>
+    <% end %>
+    <% if policy(@customer).destroy? %>
+      <%= button_to "Delete customer", @customer, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete customer #{@customer.name}?" } %>
+    <% end %>
   </div>
 </div>
 
@@ -18,7 +24,9 @@
 </dl>
 
 <h2 class="h4 mt-5">Bikes</h2>
-<p><%= link_to "Add a bike for #{@customer.name}", new_bike_path(customer_id: @customer.id), class: "btn btn-outline-primary" %></p>
+<% if policy(Bike).new? %>
+  <p><%= link_to "Add a bike for #{@customer.name}", new_bike_path(customer_id: @customer.id), class: "btn btn-outline-primary" %></p>
+<% end %>
 <% if @customer.bikes.any? %>
   <div class="table-responsive">
     <table class="table table-striped align-middle">

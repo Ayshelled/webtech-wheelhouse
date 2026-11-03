@@ -140,7 +140,14 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
   end
 
   test "staff deletion refusal is shown on the staff page" do
-    sign_in_as(@user)
+    owner_staff = Staff.create!(name: "Nora Owner", role: "Owner")
+    owner = User.create!(
+      email_address: "nora@example.test",
+      password: "NoraOwner26!",
+      staff: owner_staff,
+      role: :owner
+    )
+    sign_in_as(owner)
 
     delete staff_path(@staff)
 

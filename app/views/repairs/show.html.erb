@@ -6,17 +6,23 @@
     <h1>Repair #<%= @repair.id %></h1>
   </div>
   <div class="d-flex flex-wrap gap-2">
-    <%= link_to "All repairs", repairs_path, class: "btn btn-outline-secondary" %>
-    <%= link_to "Edit repair", edit_repair_path(@repair), class: "btn btn-primary" %>
-    <%= button_to "Delete repair", @repair, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete repair ##{@repair.id}?" } %>
+    <% if policy(Repair).index? %>
+      <%= link_to "All repairs", repairs_path, class: "btn btn-outline-secondary" %>
+    <% end %>
+    <% if policy(@repair).edit? %>
+      <%= link_to "Edit repair", edit_repair_path(@repair), class: "btn btn-primary" %>
+    <% end %>
+    <% if policy(@repair).destroy? %>
+      <%= button_to "Delete repair", @repair, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete repair ##{@repair.id}?" } %>
+    <% end %>
   </div>
 </div>
 
 <dl class="row">
   <dt class="col-sm-3">Bike</dt>
-  <dd class="col-sm-9"><%= link_to "#{@repair.bike.make} #{@repair.bike.model}", bike_path(@repair.bike) %></dd>
+  <dd class="col-sm-9"><%= policy(@repair.bike).show? ? link_to("#{@repair.bike.make} #{@repair.bike.model}", bike_path(@repair.bike)) : "#{@repair.bike.make} #{@repair.bike.model}" %></dd>
   <dt class="col-sm-3">Customer</dt>
-  <dd class="col-sm-9"><%= link_to @repair.bike.customer.name, customer_path(@repair.bike.customer) %></dd>
+  <dd class="col-sm-9"><%= policy(@repair.bike.customer).show? ? link_to(@repair.bike.customer.name, customer_path(@repair.bike.customer)) : @repair.bike.customer.name %></dd>
   <dt class="col-sm-3">Status</dt>
   <dd class="col-sm-9"><span class="badge text-bg-secondary"><%= @repair.status.humanize %></span></dd>
   <dt class="col-sm-3">Promised on</dt>
@@ -42,7 +48,9 @@
           <%= image_tag photo.variant(:large), alt: "#{@repair.bike.make} #{@repair.bike.model}, repair ##{@repair.id} intake photo", class: "img-fluid rounded" %>
         <% end %>
         <figcaption class="mt-2">
-          <%= button_to "Remove photo", photo_repair_path(@repair, photo_id: photo.id), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Remove this intake photo?" } %>
+          <% if policy(@repair).remove_photo? %>
+            <%= button_to "Remove photo", photo_repair_path(@repair, photo_id: photo.id), method: :delete, class: "btn btn-sm btn-outline-danger", data: { turbo_confirm: "Remove this intake photo?" } %>
+          <% end %>
         </figcaption>
       </figure>
     <% end %>

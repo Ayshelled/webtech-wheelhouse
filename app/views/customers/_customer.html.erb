@@ -1,4 +1,4 @@
 <tr>
-  <td><%= link_to customer.name, customer_path(customer) %></td>
+  <td><%= policy(customer).show? ? link_to(customer.name, customer_path(customer)) : customer.name %></td>
   <td><%= customer.phone %></td>
 </tr>

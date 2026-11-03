@@ -48,3 +48,12 @@ a specific past repair.
 with customers, while owner and mechanic accounts identify people with additional workshop
 responsibilities. A new or unassigned account should receive the least privileged role rather than
 owner or mechanic privileges.
+
+## 5. Which actions are outside resource authorization?
+
+**Decision:** The home, visit, and about pages require a signed-in account and are authorized as page
+actions. The public services page and public service catalog index/show are authorized by policy,
+with reads intentionally available to visitors. Sign-up, sign-in, and password-reset actions remain
+available without a session so users can establish or recover one. Sign-out is authorized for any
+signed-in account. The JSON API remains governed by its existing bearer-token authentication and is
+not routed through the HTML application's Pundit callbacks.

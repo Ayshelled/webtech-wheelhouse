@@ -7,8 +7,12 @@
   </div>
   <div class="d-flex flex-wrap gap-2">
     <%= link_to "All services", service_catalog_items_path, class: "btn btn-outline-secondary" %>
-    <%= link_to "Edit service", edit_service_catalog_item_path(@service_catalog_item), class: "btn btn-primary" %>
-    <%= button_to "Delete service", @service_catalog_item, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete service #{@service_catalog_item.name}?" } %>
+    <% if policy(@service_catalog_item).edit? %>
+      <%= link_to "Edit service", edit_service_catalog_item_path(@service_catalog_item), class: "btn btn-primary" %>
+    <% end %>
+    <% if policy(@service_catalog_item).destroy? %>
+      <%= button_to "Delete service", @service_catalog_item, method: :delete, class: "btn btn-outline-danger", data: { turbo_confirm: "Delete service #{@service_catalog_item.name}?" } %>
+    <% end %>
   </div>
 </div>
 
@@ -20,14 +24,14 @@
 </dl>
 
 <h2 class="h4 mt-5">Repair lines</h2>
-<% if @service_catalog_item.repair_line_items.any? %>
+<% if @repair_line_items.any? %>
   <div class="table-responsive">
     <table class="table table-striped align-middle">
       <thead><tr><th>Repair</th><th>Price charged</th></tr></thead>
       <tbody>
-        <% @service_catalog_item.repair_line_items.each do |line_item| %>
+        <% @repair_line_items.each do |line_item| %>
           <tr>
-            <td><%= link_to "Repair ##{line_item.repair.id}", repair_path(line_item.repair) %></td>
+            <td><%= policy(line_item.repair).show? ? link_to("Repair ##{line_item.repair.id}", repair_path(line_item.repair)) : "Repair ##{line_item.repair.id}" %></td>
             <td><%= number_to_currency(line_item.price_charged) %></td>
           </tr>
         <% end %>

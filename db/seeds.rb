@@ -74,6 +74,7 @@ end
 default_user = User.find_or_initialize_by(email_address: "new.counter@wheelhouse.test")
 default_user.password = "DefaultCounter26!" if default_user.new_record? || !default_user.authenticate("DefaultCounter26!")
 default_user.password_confirmation = "DefaultCounter26!" if default_user.password.present?
+default_user.role = :counter
 default_user.save!
 
 customer_records = {}
@@ -124,24 +125,24 @@ seed_photos = Dir[Rails.root.join("db/seeds/*.jpg")].sort
 raise "Seed bicycle photos are missing from db/seeds/." if seed_photos.empty?
 
 repairs = [
-  ["TRK-M7-001", "Tagged", nil, nil, nil, 0, ["Safety inspection"]],
-  ["TRK-M7-002", "Diagnosing", nil, nil, nil, -1, ["Basic tune-up"]],
-  ["SP-S2-001", "Awaiting Approval", nil, nil, nil, -2, ["Brake pad replacement", "Cable replacement"]],
-  ["GI-CAR3-001", "Approved", true, today - 3.hours, today - 3.days, -4, ["Full tune-up", "Chain replacement"]],
-  ["CA-Q4-001", "In Progress", true, today - 1.day, today - 5.days, -2, ["Wheel truing"]],
-  ["BR-CL-001", "Ready for Pickup", true, today - 2.days, today - 6.days, -7, ["Gear adjustment", "Full bike wash"]],
-  ["CU-AP-001", "Picked Up", true, today - 8.days, today - 12.days, -15, ["Bottom bracket service"]],
-  ["SC-S40-001", "Declined", false, nil, today - 4.days, -5, ["Tubeless sealant refresh"]],
-  ["RA-ST-001", "In Progress", true, today - 2.days, today - 3.days, -1, ["Puncture repair", "Inner tube replacement"]],
-  ["BO-H86-001", "Picked Up", true, today - 10.days, today - 14.days, -20, ["Full tune-up", "Handlebar tape wrap"]],
-  ["ME-BN20-001", "Ready for Pickup", true, today - 1.day, today - 3.days, -3, ["Brake bleed"]],
-  ["KO-DP-001", "Tagged", nil, nil, nil, 1, ["Safety inspection"]],
-  ["TRK-M7-001", "Diagnosing", nil, nil, nil, 2, ["Tyre replacement"]],
-  ["SP-S2-001", "Approved", true, today - 1.hour, today - 2.days, -1, ["Gear adjustment", "Cable replacement"]],
-  ["GI-CAR3-001", "Picked Up", true, today - 20.days, today - 25.days, -30, ["Basic tune-up", "Spoke replacement"]]
+  ["TRK-M7-001", "Tagged", nil, nil, nil, 0, ["Safety inspection"], nil],
+  ["TRK-M7-002", "Diagnosing", nil, nil, nil, -1, ["Basic tune-up"], "Maya Singh"],
+  ["SP-S2-001", "Awaiting Approval", nil, nil, nil, -2, ["Brake pad replacement", "Cable replacement"], "Tom Bennett"],
+  ["GI-CAR3-001", "Approved", true, today - 3.hours, today - 3.days, -4, ["Full tune-up", "Chain replacement"], "Maya Singh"],
+  ["CA-Q4-001", "In Progress", true, today - 1.day, today - 5.days, -2, ["Wheel truing"], "Tom Bennett"],
+  ["BR-CL-001", "Ready for Pickup", true, today - 2.days, today - 6.days, -7, ["Gear adjustment", "Full bike wash"], "Maya Singh"],
+  ["CU-AP-001", "Picked Up", true, today - 8.days, today - 12.days, -15, ["Bottom bracket service"], "Tom Bennett"],
+  ["SC-S40-001", "Declined", false, nil, today - 4.days, -5, ["Tubeless sealant refresh"], "Maya Singh"],
+  ["RA-ST-001", "In Progress", true, today - 2.days, today - 3.days, -1, ["Puncture repair", "Inner tube replacement"], "Tom Bennett"],
+  ["BO-H86-001", "Picked Up", true, today - 10.days, today - 14.days, -20, ["Full tune-up", "Handlebar tape wrap"], "Maya Singh"],
+  ["ME-BN20-001", "Ready for Pickup", true, today - 1.day, today - 3.days, -3, ["Brake bleed"], "Tom Bennett"],
+  ["KO-DP-001", "Tagged", nil, nil, nil, 1, ["Safety inspection"], nil],
+  ["TRK-M7-001", "Diagnosing", nil, nil, nil, 2, ["Tyre replacement"], "Maya Singh"],
+  ["SP-S2-001", "Approved", true, today - 1.hour, today - 2.days, -1, ["Gear adjustment", "Cable replacement"], "Tom Bennett"],
+  ["GI-CAR3-001", "Picked Up", true, today - 20.days, today - 25.days, -30, ["Basic tune-up", "Spoke replacement"], "Maya Singh"]
 ]
 
-repairs.each do |serial, status, approved, approved_at, quoted_at, promised_offset, service_names|
+repairs.each do |serial, status, approved, approved_at, quoted_at, promised_offset, service_names, mechanic_name|
   repair = Repair.find_or_initialize_by(
     bike_id: bike_records.fetch(serial).id,
     promised_on: today + promised_offset
@@ -149,7 +150,7 @@ repairs.each do |serial, status, approved, approved_at, quoted_at, promised_offs
 
   repair.created_at = [ repair.created_at || seed_repair_created_at, seed_repair_created_at ].min
   repair.intake_staff_id = staff_records.fetch("Evan Brooks").id
-  repair.assigned_staff_id = staff_records.fetch("Maya Singh").id unless status == "Tagged"
+  repair.assigned_staff_id = staff_records.fetch(mechanic_name).id if mechanic_name
   repair.status = status
   repair.customer_approved = approved
   repair.approved_at = approved_at

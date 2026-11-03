@@ -3,23 +3,28 @@ class RepairsController < ApplicationController
   before_action :load_form_options, only: %i[new edit create update]
 
   def index
-    @repairs = Repair.with_attached_photos.with_rich_text_diagnosis
+    authorize Repair
+    @repairs = policy_scope(Repair).with_attached_photos.with_rich_text_diagnosis
       .includes({ intake_user: :staff }, bike: :customer).by_promised_on
   end
 
   def show
+    authorize @repair
   end
 
   def new
+    authorize Repair
     @repair = Repair.new(bike: Bike.find_by(id: params[:bike_id]))
     3.times { @repair.repair_line_items.build }
   end
 
   def edit
+    authorize @repair
     3.times { @repair.repair_line_items.build }
   end
 
   def create
+    authorize Repair
     @repair = Repair.new(repair_params)
     @repair.intake_user = Current.user
     if @repair.save
@@ -31,6 +36,7 @@ class RepairsController < ApplicationController
   end
 
   def update
+    authorize @repair
     attributes = repair_params
     new_photos = Array(attributes.delete(:photos)).reject(&:blank?)
     @repair.assign_attributes(attributes)
@@ -45,6 +51,7 @@ class RepairsController < ApplicationController
   end
 
   def destroy
+    authorize @repair
     if @repair.destroy
       redirect_to repairs_path, notice: "Repair ##{@repair.id} was deleted.", status: :see_other
     else
@@ -53,6 +60,7 @@ class RepairsController < ApplicationController
   end
 
   def remove_photo
+    authorize @repair, :remove_photo?
     @repair.photos.attachments.find(params[:photo_id]).purge
     redirect_to @repair, notice: "Intake photo was removed.", status: :see_other
   end
@@ -72,12 +80,7 @@ class RepairsController < ApplicationController
   end
 
   def repair_params
-    params.expect(repair: [
-      :bike_id, :intake_staff_id, :assigned_staff_id, :promised_on, :status,
-      :customer_approved, :approved_at, :quoted_at, :handed_back_at,
-      :diagnosis, photos: [],
-      repair_line_items_attributes: [ [ :id, :service_catalog_item_id, :price_charged, :_destroy ] ]
-    ])
+    params.expect(repair: policy(@repair || Repair.new).permitted_attributes)
   end
 
   def ensure_empty_line_slots
